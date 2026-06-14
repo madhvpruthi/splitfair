@@ -1,0 +1,8 @@
+This is a JSON report produced by the application when it ingests and processes a CSV. To generate one to submit:
+
+Go to your live app: https://splitfair-sooty.vercel.app/dashboard
+Click Import CSV (or go to /import).
+Upload a CSV file.
+If there are anomalies, select the resolution options in the UI (e.g., map users, ignore duplicates) and click Commit Import.
+Go to the dashboard, scroll down to the Import Jobs list, and click View Report for that job (or go to /import-report/<job-id>).
+Copy the resulting JSON report of anomalies and resolutions.
