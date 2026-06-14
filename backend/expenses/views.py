@@ -43,6 +43,35 @@ def send_otp_notification(user, otp, context="register"):
     print("\n" + "="*50 + f"\n[OTP DELIVERY] Username: {user.username} | Destination: {destination} | OTP: {otp}\n" + "="*50 + "\n")
     
     if user.email:
+        # 1. Try Resend HTTP API first (bypasses Render SMTP port blocking)
+        resend_api_key = os.environ.get('RESEND_API_KEY')
+        if resend_api_key:
+            import requests
+            try:
+                from_email = os.environ.get('RESEND_FROM_EMAIL', 'onboarding@resend.dev')
+                response = requests.post(
+                    "https://api.resend.com/emails",
+                    headers={
+                        "Authorization": f"Bearer {resend_api_key}",
+                        "Content-Type": "application/json",
+                    },
+                    json={
+                        "from": from_email,
+                        "to": user.email,
+                        "subject": subject,
+                        "text": message,
+                    },
+                    timeout=10
+                )
+                if response.status_code in (200, 201):
+                    print(f"Email successfully sent to {user.email} via Resend API")
+                    return
+                else:
+                    print(f"Failed to send email via Resend API: {response.status_code} - {response.text}")
+            except Exception as e:
+                print(f"Exception sending email via Resend API: {e}")
+
+        # 2. Fallback to standard SMTP send_mail
         if not getattr(settings, 'EMAIL_HOST_USER', None):
             print(f"[WARNING] EMAIL_HOST_USER is not configured in settings.py. Email was not sent. Check console/logs for OTP: {otp}")
         else:
