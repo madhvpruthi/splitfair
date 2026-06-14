@@ -102,7 +102,12 @@ export const AuthProvider = ({ children }) => {
       email,
       password
     });
-    return res.data;
+    const { access, refresh } = res.data.token;
+    localStorage.setItem('access_token', access);
+    localStorage.setItem('refresh_token', refresh);
+    setToken(access);
+    setUser(res.data.user);
+    return res.data.user;
   };
 
   const verifyOtp = async (username, otp) => {

@@ -34,8 +34,7 @@ export const Register = () => {
     setError('');
     try {
       await register(username, email.trim(), password);
-      setIsVerifyMode(true);
-      setTimeLeft(60);
+      navigate('/dashboard');
     } catch (err) {
       console.error(err);
       const data = err.response?.data;

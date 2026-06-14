@@ -96,20 +96,18 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        user.is_verified = False
-        user.is_active = False
-        
-        import random
-        otp = str(random.randint(100000, 999999))
-        user.otp_code = otp
-        user.otp_created_at = timezone.now()
+        user.is_verified = True
+        user.is_active = True
         user.save()
         
-        send_otp_notification(user, otp, context="register")
-        
+        refresh = RefreshToken.for_user(user)
         return Response({
-            'username': user.username,
-            'message': 'OTP sent successfully. Please verify to activate your account.'
+            'user': UserSerializer(user).data,
+            'token': {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            },
+            'message': 'Account created successfully.'
         }, status=status.HTTP_201_CREATED)
 
 class VerifyOTPView(generics.GenericAPIView):
