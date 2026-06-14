@@ -30,6 +30,7 @@ export const GroupDetails = () => {
   const [balances, setBalances] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('expenses');
+  const [expenseSubTab, setExpenseSubTab] = useState('list');
 
   // Modals state
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -405,14 +406,14 @@ export const GroupDetails = () => {
     });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 md:pb-6">
       {/* Title block */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-extrabold text-slate-100 tracking-tight">{group.name}</h2>
           <p className="text-slate-400 text-sm mt-1">{group.description || 'Manage expenses and payouts'}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 w-full md:w-auto">
           {group && group.created_by === user?.id ? (
             <button
               onClick={handleDeleteGroup}
@@ -448,7 +449,7 @@ export const GroupDetails = () => {
               setIsSettlementPrepopulated(false);
               setShowSettlementModal(true);
             }}
-            className="btn-secondary text-xs flex items-center gap-2 cursor-pointer"
+            className="btn-secondary text-xs hidden md:flex items-center gap-2 cursor-pointer"
           >
             <CreditCard size={14} />
             <span>Settle Up</span>
@@ -463,7 +464,7 @@ export const GroupDetails = () => {
               setExpError('');
               setShowExpenseModal(true);
             }}
-            className="btn-primary text-xs flex items-center gap-2 cursor-pointer"
+            className="btn-primary text-xs hidden md:flex items-center gap-2 cursor-pointer"
           >
             <Plus size={14} />
             <span>Add Expense</span>
@@ -508,34 +509,34 @@ export const GroupDetails = () => {
         </div>
       </div>
 
-      {/* Tabs Menu */}
-      <div className="flex border-b border-slate-800/80">
+      {/* Tabs Menu (Segmented Control) */}
+      <div className="bg-slate-900/60 p-1.5 rounded-2xl flex border border-slate-800/80 gap-1 overflow-x-auto scrollbar-none mb-6">
         <button
           onClick={() => setActiveTab('expenses')}
-          className={`px-5 py-3 font-semibold text-sm border-b-2 transition-all duration-200 cursor-pointer ${
+          className={`flex-1 py-2.5 px-4 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer whitespace-nowrap text-center ${
             activeTab === 'expenses'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          Expenses & Settlements
+          Expenses & Payouts
         </button>
         <button
           onClick={() => setActiveTab('balances')}
-          className={`px-5 py-3 font-semibold text-sm border-b-2 transition-all duration-200 cursor-pointer ${
+          className={`flex-1 py-2.5 px-4 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer whitespace-nowrap text-center ${
             activeTab === 'balances'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           Balances & Simplification
         </button>
         <button
           onClick={() => setActiveTab('members')}
-          className={`px-5 py-3 font-semibold text-sm border-b-2 transition-all duration-200 cursor-pointer ${
+          className={`flex-1 py-2.5 px-4 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer whitespace-nowrap text-center ${
             activeTab === 'members'
-              ? 'border-indigo-500 text-indigo-400'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           Members ({memberships.length})
@@ -544,8 +545,35 @@ export const GroupDetails = () => {
 
       {/* EXPENSES TAB */}
       {activeTab === 'expenses' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-4">
+        <div className="space-y-4">
+          {/* Mobile sub-tabs for Expenses vs Payouts */}
+          <div className="flex bg-slate-900/40 p-1.5 rounded-2xl border border-slate-800/80 gap-1 lg:hidden mb-2">
+            <button
+              type="button"
+              onClick={() => setExpenseSubTab('list')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer text-center ${
+                expenseSubTab === 'list'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/10'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Expenses
+            </button>
+            <button
+              type="button"
+              onClick={() => setExpenseSubTab('settlements')}
+              className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer text-center ${
+                expenseSubTab === 'settlements'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/10'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Settlements
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className={`lg:col-span-2 space-y-4 ${expenseSubTab === 'list' ? 'block' : 'hidden lg:block'}`}>
             <h3 className="text-lg font-bold text-slate-200 flex items-center gap-2">
               <Receipt size={18} className="text-indigo-400" />
               <span>Expense History</span>
@@ -677,7 +705,7 @@ export const GroupDetails = () => {
           </div>
 
           {/* Settlements side block */}
-          <div className="space-y-4">
+          <div className={`space-y-4 ${expenseSubTab === 'settlements' ? 'block' : 'hidden lg:block'}`}>
             <h3 className="text-lg font-bold text-slate-200 flex items-center gap-2">
               <CreditCard size={18} className="text-indigo-400" />
               <span>Settlement Payments</span>
@@ -712,6 +740,7 @@ export const GroupDetails = () => {
             )}
           </div>
         </div>
+      </div>
       )}
 
       {/* BALANCES TAB */}
@@ -1664,6 +1693,42 @@ export const GroupDetails = () => {
           </div>
         </div>
       )}
+
+      {/* Mobile Sticky Action Panel */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md bg-slate-950/80 backdrop-blur-lg border border-slate-800/80 p-3 rounded-2xl shadow-2xl shadow-indigo-500/10 z-40 flex items-center justify-between gap-3 md:hidden">
+        <button
+          onClick={() => {
+            if (memberships.length > 0) {
+              setSettPayer(memberships[0].user);
+              setSettReceiver(memberships[1]?.user || memberships[0].user);
+            }
+            setSettAmount('');
+            setSettNote('');
+            setSettError('');
+            setIsSettlementPrepopulated(false);
+            setShowSettlementModal(true);
+          }}
+          className="flex-1 btn-secondary text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 font-bold cursor-pointer"
+        >
+          <CreditCard size={14} />
+          <span>Settle Up</span>
+        </button>
+        <button
+          onClick={() => {
+            setEditingExpense(null);
+            setExpTitle('');
+            setExpDesc('');
+            setExpAmount('');
+            setExpSplitDetails({});
+            setExpError('');
+            setShowExpenseModal(true);
+          }}
+          className="flex-1 btn-primary text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 font-bold cursor-pointer"
+        >
+          <Plus size={14} />
+          <span>Add Expense</span>
+        </button>
+      </div>
     </div>
   );
 };
