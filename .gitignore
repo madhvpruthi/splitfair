@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+backend/db.sqlite3
+*.sqlite3
+
+# Environments
+backend/venv/
+.venv/
+venv/
+ENV/
+env/
+
+# Dependency directories
+frontend/node_modules/
+node_modules/
+
+# Production builds
+frontend/dist/
+dist/
+
+# Local configuration files
+backend/.env
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS files
+.DS_Store
+Thumbs.db
